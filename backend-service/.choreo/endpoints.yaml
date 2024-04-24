@@ -1,18 +1,9 @@
+version: 0.1
+
 endpoints:
-  - path: /get_mail
-    method: GET
-    description: Returns a list of all emails.
-
-  - path: /get_tasks/<email>
-    method: GET
-    description: Returns all tasks and deadlines for a specific email.
-    parameters:
-      - name: email
-        in: path
-        required: true
-        type: string
-        description: The email address for which to retrieve tasks.
-
-  - path: /get_all_info
-    method: GET
-    description: Returns email, tasks, and deadlines for all entries in the database.
+  - name: Task Management
+    port: 5000
+    type: REST
+    networkVisibility: Public
+    schemaFilePath: openapi.yaml
+    context: /task_management
