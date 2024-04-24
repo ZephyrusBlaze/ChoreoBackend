@@ -1,0 +1,37 @@
+endpoints:
+  - path: /get_mail
+    description: Returns a list of all emails.
+    method: GET
+    response:
+      - 200: 
+          description: Successful response
+          body:
+            application/json:
+              example: ["john@example.com", "jane@example.com"]
+
+  - path: /get_tasks/<email>
+    description: Returns all tasks and deadlines for a specific email.
+    method: GET
+    parameters:
+      - name: email
+        in: path
+        required: true
+        type: string
+        description: The email address for which to retrieve tasks.
+    response:
+      - 200:
+          description: Successful response
+          body:
+            application/json:
+              example: [{"task": "Task 1", "deadline": "2024-05-01"}, {"task": "Task 2", "deadline": "2024-05-05"}]
+
+  - path: /get_all_info
+    description: Returns email, tasks, and deadlines for all entries in the database.
+    method: GET
+    response:
+      - 200:
+          description: Successful response
+          body:
+            application/json:
+              example: [{"email": "john@example.com", "task": "Task 1", "deadline": "2024-05-01"}, {"email": "john@example.com", "task": "Task 2", "deadline": "2024-05-05"}, {"email": "jane@example.com", "task": "Task 3", "deadline": "2024-04-30"}, {"email": "jane@example.com", "task": "Task 4", "deadline": "2024-05-10"}]
+              
