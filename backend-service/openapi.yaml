@@ -1,0 +1,78 @@
+openapi: 3.0.3
+paths:
+  /get_mail:
+    get:
+      summary: Get all emails
+      operationId: GetAllEmails
+      tags:
+        - tasks
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /get_tasks/{email}:
+    get:
+      summary: Get tasks by email
+      operationId: GetTasksByEmail
+      tags:
+        - tasks
+      parameters:
+        - name: email
+          in: path
+          description: Email address to get tasks for
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    task:
+                      type: string
+                    deadline:
+                      type: string
+                      format: date
+  /get_all_info:
+    get:
+      summary: Get all information
+      operationId: GetAllInformation
+      tags:
+        - tasks
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                    task:
+                      type: string
+                    deadline:
+                      type: string
+                      format: date
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        task:
+          type: string
+        deadline:
+          type: string
+          format: date
