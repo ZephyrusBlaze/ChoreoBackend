@@ -1,9 +1,0 @@
-version: 0.1
-
-endpoints:
-  - name: Task Management
-    port: 5000
-    type: REST
-    networkVisibility: Public
-    schemaFilePath: openapi.yaml
-    context: /task_management

@@ -1,14 +1,19 @@
-openapi: 3.0.3
+openapi: 3.0.0
+info:
+  title: Tasks Backend API
+  description: Backend service for managing tasks.
+  version: "1.0"
+servers:
+  - url: http://localhost:8080
+    description: Development server
 paths:
   /get_mail:
     get:
-      summary: Get all emails
-      operationId: GetAllEmails
-      tags:
-        - tasks
+      summary: Get unique emails
+      description: Retrieves a list of unique email addresses associated with tasks.
       responses:
-        "200":
-          description: Successful operation
+        '200':
+          description: List of unique email addresses
           content:
             application/json:
               schema:
@@ -18,19 +23,17 @@ paths:
   /get_tasks/{email}:
     get:
       summary: Get tasks by email
-      operationId: GetTasksByEmail
-      tags:
-        - tasks
+      description: Retrieves tasks associated with a specific email address.
       parameters:
-        - name: email
-          in: path
-          description: Email address to get tasks for
+        - in: path
+          name: email
           required: true
           schema:
             type: string
+            format: email
       responses:
-        "200":
-          description: Successful operation
+        '200':
+          description: List of tasks for the given email address
           content:
             application/json:
               schema:
@@ -45,13 +48,11 @@ paths:
                       format: date
   /get_all_info:
     get:
-      summary: Get all information
-      operationId: GetAllInformation
-      tags:
-        - tasks
+      summary: Get all task information
+      description: Retrieves all task information including email, task, and deadline.
       responses:
-        "200":
-          description: Successful operation
+        '200':
+          description: List of all task information
           content:
             application/json:
               schema:
@@ -68,11 +69,10 @@ paths:
                       format: date
 components:
   schemas:
-    Task:
+    Error:
       type: object
       properties:
-        task:
+        message:
           type: string
-        deadline:
-          type: string
-          format: date
+        code:
+          type: integer
