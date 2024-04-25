@@ -73,4 +73,4 @@ def get_all_info():
 app.teardown_appcontext(close_db)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
