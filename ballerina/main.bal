@@ -1,5 +1,3 @@
-// A dummy app coz i need database for it to work but database is only for 7 days trial
-
 import ballerina/http;
 import ballerina/io;
 import ballerina/log;
@@ -7,56 +5,72 @@ import ballerina/time;
 
 import wso2/choreo.sendemail as ChoreoEmail;
 
-// Configurable URL for the Taskify API
-configurable string todoListApiUrl = ?;
+configurable string todoApiUrl = ?;
 
-// Define the type for a TodoItem
 type TodoItem record {
-    int id;
     string task;
     string deadline;
 };
 
 public function main() returns error? {
-    io:println("Taskify API URL: " + todoListApiUrl);
-    http:Client todoListApiEndpoint = check new (todoListApiUrl);
+    io:println("Todo API URL: " + todoApiUrl);
+    http:Client todoApiEndpoint = check new (todoApiUrl);
 
-    // Fetching the Taskify items
-    TodoItem[] todoList = check todoListApiEndpoint->/get_todo_list();
+    // Fetching the todo items
+    TodoItem[] todoItems = check todoApiEndpoint->/todos;
 
-    foreach TodoItem item in todoList {
-        // Sending an email reminder for each todo item
-        check sendEmailReminder(item);
+    foreach TodoItem todoItem in todoItems {
+        // Sending an email reminder
+        check sendEmail(todoItem);
     }
 }
 
-function sendEmailReminder(TodoItem item) returns error? {
+function sendEmail(TodoItem todoItem) returns error? {
 
-    // Format the deadline date
-    string formattedDeadline = check formatDate(item.deadline);
+    // Format the deadline
+    string formattedDeadline = check getFormattedDeadline(todoItem.deadline);
 
     // Appending branding details to the content
     string finalContent = string `
 Dear User,
 
-This is a friendly reminder that you have a task to "${item.task}" due by ${formattedDeadline}.
+This is a friendly reminder that you have a task "${todoItem.task}" due on ${formattedDeadline}.
 
-Thank you for using our Taskify app. We hope it helps you stay organized and productive!
+Thank you for using our Todo List app. We hope it helps you stay organized and productive.
 
 Best regards,
-The Taskify Team
+The Todo List Team
+
+---
+
+Todo List - Stay Organized, Stay Productive
+
+Website: https://www.todolistapp.com
+Support: support@todolistapp.com
+Phone: +1 (800) 123-4567
+
+Connect with us:
+- Facebook: https://www.facebook.com/TodoListApp
+- Twitter: https://twitter.com/TodoListApp
+
+Privacy Policy | Terms of Service | Unsubscribe
+
+This message is intended only for the recipient and may contain confidential information. If you are not the intended recipient, please disregard this message.
 `;
 
-    // Sending the email reminder
     ChoreoEmail:Client emailClient = check new ();
-    string sendEmailResponse = check emailClient->sendEmail("recipient@example.com", "Taskify Task Reminder", finalContent);
-    log:printInfo("Email sent successfully to: recipient@example.com with response: " + sendEmailResponse);
+    string sendEmailResponse = check emailClient->sendEmail("user@example.com", "Todo Task Reminder", finalContent);
+    log:printInfo("Email sent successfully to user@example.com with response: " + sendEmailResponse);
 }
 
-function formatDate(string deadline) returns string|error {
-    // Parse the deadline date and format it
-    time:Time formattedTime = check time:parse(deadline, "yyyy-MM-dd");
-    string formattedDate = check formattedTime.format("MMMM dd, yyyy");
+function getFormattedDeadline(string deadline) returns string|error {
+    time:Utc utcTime = check time:utcFromString(deadline);
 
-    return formattedDate;
+    // Convert UTC time to IST
+    time:TimeZone istZone = check new ("Asia/Kolkata");
+    time:Civil istTime = istZone.utcToCivil(utcTime);
+
+    // Format the IST time
+    string formattedDeadline = check time:civilToEmailString(istTime, time:PREFER_TIME_ABBREV);
+    return formattedDeadline;
 }
